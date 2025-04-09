@@ -53,6 +53,111 @@ LIVROS = {
     }
 }
 
+# Estrutura de livros por categoria
+LIVROS_ESTUDO = {
+    "Antigo Testamento": {
+        "Lei de Moisés": {
+            "Gênesis": "gn",
+            "Êxodo": "ex",
+            "Levítico": "lv",
+            "Números": "nm",
+            "Deuteronômio": "dt"
+        },
+        "Conquista de Canaã": {
+            "Josué": "js"
+        },
+        "Período dos Juízes": {
+            "Juízes": "jz",
+            "Rute": "rt"
+        },
+        "Monarquia Unida": {
+            "1 Samuel": "1sm",
+            "2 Samuel": "2sm"
+        },
+        "A queda de Israel": {
+            "1 Reis": "1rs",
+            "2 Reis": "2rs"
+        },
+        "Recapitulação da monarquia de Israel": {
+            "1 Crônicas": "1cr",
+            "2 Crônicas": "2cr"
+        },
+        "No Exílio": {
+            "Obadias": "ob",     # cerca de 586 a.C.
+            "Ezequiel": "ez",    # 593–571 a.C.
+            "Daniel": "dn",      # 605–530 a.C.
+            "Ester": "et",       # cerca de 480 a.C., Final do exílio mas ainda na Pérsia
+        },
+        "Pré-Exílio": {
+            "Jonas": "jn",       # c. 780 a.C.
+            "Amós": "am",        # c. 760–750 a.C.
+            "Oseias": "os",      # c. 755–725 a.C.
+            "Miquéias": "mq",    # c. 740–700 a.C.
+            "Isaías": "is",      # c. 740–681 a.C.
+            "Naum": "na",        # c. 660–630 a.C.
+            "Sofonias": "sf",    # c. 640–620 a.C.
+            "Habacuque": "hc",   # c. 620–600 a.C.
+            "Jeremias": "jr",    # c. 627–586 a.C.
+            "Lamentações": "lm", # logo após 586 a.C.
+        },
+
+        "Pós-Exílio": {
+            "Ageu": "ag",         # 520 a.C.
+            "Zacarias": "zc",     # 520 a.C. em diante
+            "Esdras": "ed",       # 458 a.C.
+            "Neemias": "ne",      # 445 a.C.
+            "Malaquias": "ml",    # ~430 a.C.
+            "Joel": "jl",         # (posição cronológica debatida, aqui classificado como pós-exílio)
+        },
+        # Livros não-históricos
+        "Livros Sapienciais": {
+            "Jó": "jó", "Provérbios": "pv", "Eclesiastes": "ec"
+        },
+        "Livros Poéticos": {
+            "Salmos": "sl", "Cantares": "ct"
+        },
+    },
+    "Novo Testamento": {
+        "Evangelhos (ordem cronológica provável)": {
+            "Marcos": "mc",    # c. 65–70 d.C.
+            "Mateus": "mt",    # c. 70–85 d.C.
+            "Lucas": "lc",     # c. 80–90 d.C.
+            "João": "jo",      # c. 90–100 d.C.
+        },
+        "Livros Históricos": {
+            "Atos": "at"
+        },
+        "Epístolas e cartas paulinas (ordem cronológica)": {
+            "1 Tessalonicenses": "1ts",   # c. 50–51 d.C.
+            "2 Tessalonicenses": "2ts",   # c. 51–52 d.C.
+            "Gálatas": "gl",              # c. 53 d.C.
+            "1 Coríntios": "1co",         # c. 55 d.C.
+            "2 Coríntios": "2co",         # c. 56 d.C.
+            "Romanos": "rm",              # c. 57 d.C.
+            "Filipenses": "fp",           # c. 60–61 d.C.
+            "Colossenses": "cl",          # c. 60–61 d.C.
+            "Filemom": "fm",              # c. 60–61 d.C.
+            "Efésios": "ef",              # c. 60–62 d.C.
+            "1 Timóteo": "1tm",           # c. 63–65 d.C.
+            "Tito": "tt",                 # c. 63–65 d.C.
+            "2 Timóteo": "2tm",           # c. 66–67 d.C.
+        },
+        "Epístolas Gerais": {
+            "Tiago": "tg",           # c. 45–49 d.C.
+            "1 Pedro": "1pe",        # c. 60–64 d.C.
+            "Hebreus": "hb",         # c. 60–70 d.C.
+            "Judas": "jd",           # c. 65–80 d.C.
+            "2 Pedro": "2pe",        # c. 65–80 d.C.
+            "1 João": "1jo",         # c. 85–95 d.C.
+            "2 João": "2jo",         # c. 90–95 d.C.
+            "3 João": "3jo"          # c. 90–95 d.C.
+        },
+        "Livros Proféticos": {
+            "Apocalipse": "ap"
+        }
+    }
+}
+
 class MainUi(QMainWindow):
     '''
     Esta função inicializa a interface principal da aplicação. Configura o
