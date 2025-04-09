@@ -158,6 +158,15 @@ LIVROS_ESTUDO = {
     }
 }
 
+# Função auxiliadora para popular os livros
+def popular_biblia(self, menu_principal, estrutura_livros):
+    for categoria, livros in estrutura_livros.items():
+        submenu = menu_principal.addMenu(categoria)
+        for livro, abreviatura in livros.items():
+            acao = QAction(livro, self)
+            acao.triggered.connect(lambda checked, abv=abreviatura, nome=livro: self.carregar_capitulo(abv, nome))
+            submenu.addAction(acao)
+
 class MainUi(QMainWindow):
     '''
     Esta função inicializa a interface principal da aplicação. Configura o
@@ -280,6 +289,7 @@ class MainUi(QMainWindow):
         # Criação dos menus
         self.menu_antigo = self.menuBar().addMenu("Antigo Testamento")
         self.menu_novo = self.menuBar().addMenu("Novo Testamento")
+        self.menu_estudo = self.menuBar().addMenu("Bíblia de Estudos")
         self.menu_options = self.menuBar().addMenu("Opções")
 
         # criar submenu "Anotações"
@@ -290,23 +300,18 @@ class MainUi(QMainWindow):
         acao_cb = QAction("Chave Bíblica", self)
         acao_cb.triggered.connect(self.run_cb)
         self.menu_options.addAction(acao_cb)
-        
-        # Populando o Antigo Testamento
-        for categoria, livros in LIVROS["Antigo Testamento"].items():
-            submenu = self.menu_antigo.addMenu(categoria)
-            for livro, abreviatura in livros.items():
-                acao = QAction(livro, self)
-                acao.triggered.connect(lambda checked, abv=abreviatura, nome=livro: self.carregar_capitulo(abv, nome))
-                submenu.addAction(acao)
 
-        # Populando o Novo Testamento
-        for categoria, livros in LIVROS["Novo Testamento"].items():
-            submenu = self.menu_novo.addMenu(categoria)
-            for livro, abreviatura in livros.items():
-                acao = QAction(livro, self)
-                acao.triggered.connect(lambda checked, abv=abreviatura, nome=livro: self.carregar_capitulo(abv, nome))
-                submenu.addAction(acao)
-    
+        # criar submenus da bíblia de estudos
+        antigo_testamento_estudo = self.menu_estudo.addMenu("Antigo Testamento")
+        novo_testamento_estudo = self.menu_estudo.addMenu("Novo Testamento")
+
+        # Populando menus principais
+        self.popular_biblia(self.menu_antigo, LIVROS["Antigo Testamento"])
+        self.popular_biblia(self.menu_novo, LIVROS["Novo Testamento"])
+
+        # Populando menus de estudo
+        self.popular_menu(antigo_testamento_estudo, LIVROS_ESTUDO["Antigo Testamento"])
+        self.popular_menu(novo_testamento_estudo, LIVROS_ESTUDO["Novo Testamento"])
     
     def run_notes(self):
         subprocess.Popen([f'{USER_HOME}/.biblia-offline/venv/bin/python', f'{BASE_DIR}/notes.py'])
