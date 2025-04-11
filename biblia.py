@@ -6,6 +6,7 @@ import sys
 import os
 import json
 import subprocess
+import re
 
 # Caminho para os livros da Bíblia
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -157,15 +158,27 @@ LIVROS_ESTUDO = {
         }
     }
 }
+
+def formata_versiculos(texto):
+    linhas = texto.splitlines()
+    resultado = []
+
+    for linha in linhas:
+        # Match que captura os números antes do primeiro hífen
+        match = re.match(r"(\d{1,3})-", linha)
+        if match:
+            numero = match.group(1)
+            # Calcula espaços (3 - número de dígitos)
+            espacos = '&nbsp;' * (3 - len(numero))
+            # Substitui a primeira ocorrência do hífen
+            nova_linha = linha.replace(f"{numero}-", f"<b><code>{espacos}{numero}: </code></b>", 1)+"<br><br>"
+            resultado.append(nova_linha)
+        else:
+            resultado.append(linha)  # linha sem número-hífen permanece igual
+
+    return "\n".join(resultado)
+
 class MainUi(QMainWindow):
-    # Função auxiliadora para popular os livros
-    def popular_biblia(self, menu_principal, estrutura_livros):
-        for categoria, livros in estrutura_livros.items():
-            submenu = menu_principal.addMenu(categoria)
-            for livro, abreviatura in livros.items():
-                acao = QAction(livro, self)
-                acao.triggered.connect(lambda checked, abv=abreviatura, nome=livro: self.carregar_capitulo(abv, nome))
-                submenu.addAction(acao)
     '''
     Esta função inicializa a interface principal da aplicação. Configura o
     título da janela, o ícone, adiciona a barra de status e carrega a interface
@@ -173,6 +186,13 @@ class MainUi(QMainWindow):
     livros e conecta as ações de botões e do combobox aos métodos correspondentes.
     Finalmente, carrega o último livro e capítulo lidos ao iniciar a aplicação.
     '''
+    def popular_biblia(self, menu_principal, estrutura_livros):
+        for categoria, livros in estrutura_livros.items():
+            submenu = menu_principal.addMenu(categoria)
+            for livro, abreviatura in livros.items():
+                acao = QAction(livro, self)
+                acao.triggered.connect(lambda checked, abv=abreviatura, nome=livro: self.carregar_capitulo(abv, nome))
+                submenu.addAction(acao)
     def __init__(self):
         super(MainUi, self).__init__()
 
@@ -198,6 +218,16 @@ class MainUi(QMainWindow):
                 font-family: "Noto Sans";
                 font-size: 11pt;
             }
+                                   
+            QMenuBar::item {
+                background-color: transparent; /* Fundo transparente para itens */
+                padding: 9px;
+            }
+                                   
+            QMenuBar::item:selected {
+                background-color: #d5420c; /* Fundo transparente para itens */
+                padding: 9px;
+            }
 
             QMenu {
                 background-color: #2a2a2a; /* Cor de fundo do submenu */
@@ -208,6 +238,7 @@ class MainUi(QMainWindow):
 
             QMenu::item {
                 background-color: transparent; /* Fundo transparente para itens */
+                padding: 12px;
                 padding: 5px 20px; /* Espaçamento interno */
             }
 
@@ -235,6 +266,12 @@ class MainUi(QMainWindow):
             QPushButton:hover {
                 background-color: #e95420;
             }
+                                    
+            QPushButton:pressed {
+                background-color: #d5420c;
+            }
+            
+
         """)
         self.btn_next.clicked.connect(self.load_next_chapter)
         self.btn_next.setStyleSheet("""
@@ -245,7 +282,11 @@ class MainUi(QMainWindow):
                 font-size: 11pt;
             }
             QPushButton:hover {
-                background-color: #e95420;
+                background-color: #cb3802;
+            }
+                                    
+            QPushButton:pressed {
+                background-color: #d5420c;
             }
         """)
         
@@ -254,11 +295,20 @@ class MainUi(QMainWindow):
         
         # Aplicar cor de seleção do QTextEdit
         self.textEdit.setStyleSheet("""
-            background: #1e1e1e;
-            selection-background-color: #e95420;
-            selection-color: #ffffff;
-            line-height: 1.5;
-            padding: 10px;
+            QTextEdit {
+                background-color: #1e1e1e;
+                color: #d4d4d4;
+                selection-background-color: #e95420;
+                selection-color: #ffffff;
+                line-height: 1.6em;
+                padding: 12px;
+                font-family: sans-serif;
+                font-size: 12pt;
+                border: none;
+            }
+
+
+
         """)
         # Criação da QLabel para o relógio
         self.clock_label = QLabel(self)
@@ -334,7 +384,7 @@ class MainUi(QMainWindow):
         if os.path.exists(caminho_arquivo):
             with open(caminho_arquivo, 'r', encoding='utf-8') as file:
                 conteudo = file.read()
-                self.textEdit.setPlainText(conteudo)
+                self.textEdit.setHtml(formata_versiculos(conteudo))
                 # Atualizar a barra de status para o nome do livro e capítulo
                 self.statusBar.showMessage(f"{abreviatura_livro.upper()} - capítulo 1")
                 # Atualizar os labels
@@ -343,7 +393,7 @@ class MainUi(QMainWindow):
             self.load_chapters(abreviatura_livro)
             self.save_last_book(abreviatura_livro, 1)  # Salvar o livro e capítulo lidos
         else:
-            self.textEdit.setPlainText(f"Arquivo {caminho_arquivo} não encontrado!")
+            self.textEdit.setHtml(f"Arquivo {caminho_arquivo} não encontrado!")
 
     
     '''
@@ -389,14 +439,14 @@ class MainUi(QMainWindow):
         if os.path.exists(chapter_path):
             with open(chapter_path, 'r', encoding='utf-8') as file:
                 chapter_content = file.read()
-                self.textEdit.setPlainText(chapter_content)
+                self.textEdit.setHtml(formata_versiculos(chapter_content))
 
             # Atualiza a barra de status
             self.statusBar.showMessage(f"{self.current_book_folder.upper()} - Capítulo {chapter_number}")
             self.book_number.setText(f"capítulo {chapter_number}")  # Atualiza o número do capítulo
             self.save_last_book(self.current_book_folder, chapter_number)  # Salvar o último livro e capítulo lidos
         else:
-            self.textEdit.setPlainText(f"Capítulo {chapter_number} não encontrado!")
+            self.textEdit.setHtml(f"Capítulo {chapter_number} não encontrado!")
     
     
     '''
@@ -429,7 +479,7 @@ class MainUi(QMainWindow):
                     self.load_chapter_content(livro, str(capitulo))
                 else:
                     # Se não encontrar o livro, exibe uma mensagem de erro
-                    self.textEdit.setPlainText("Erro: Livro não encontrado.")
+                    self.textEdit.setHtml("Erro: Livro não encontrado.")
         else:
             # Se o arquivo não existir, cria um com Gênesis e Capítulo 1
             self.save_last_book("gn", 1)
