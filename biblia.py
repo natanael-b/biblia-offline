@@ -157,17 +157,15 @@ LIVROS_ESTUDO = {
         }
     }
 }
-
-# Função auxiliadora para popular os livros
-def popular_biblia(self, menu_principal, estrutura_livros):
-    for categoria, livros in estrutura_livros.items():
-        submenu = menu_principal.addMenu(categoria)
-        for livro, abreviatura in livros.items():
-            acao = QAction(livro, self)
-            acao.triggered.connect(lambda checked, abv=abreviatura, nome=livro: self.carregar_capitulo(abv, nome))
-            submenu.addAction(acao)
-
 class MainUi(QMainWindow):
+    # Função auxiliadora para popular os livros
+    def popular_biblia(self, menu_principal, estrutura_livros):
+        for categoria, livros in estrutura_livros.items():
+            submenu = menu_principal.addMenu(categoria)
+            for livro, abreviatura in livros.items():
+                acao = QAction(livro, self)
+                acao.triggered.connect(lambda checked, abv=abreviatura, nome=livro: self.carregar_capitulo(abv, nome))
+                submenu.addAction(acao)
     '''
     Esta função inicializa a interface principal da aplicação. Configura o
     título da janela, o ícone, adiciona a barra de status e carrega a interface
@@ -310,8 +308,8 @@ class MainUi(QMainWindow):
         self.popular_biblia(self.menu_novo, LIVROS["Novo Testamento"])
 
         # Populando menus de estudo
-        self.popular_menu(antigo_testamento_estudo, LIVROS_ESTUDO["Antigo Testamento"])
-        self.popular_menu(novo_testamento_estudo, LIVROS_ESTUDO["Novo Testamento"])
+        self.popular_biblia(antigo_testamento_estudo, LIVROS_ESTUDO["Antigo Testamento"])
+        self.popular_biblia(novo_testamento_estudo, LIVROS_ESTUDO["Novo Testamento"])
     
     def run_notes(self):
         subprocess.Popen([f'{USER_HOME}/.biblia-offline/venv/bin/python', f'{BASE_DIR}/notes.py'])
@@ -478,4 +476,3 @@ if __name__ == "__main__":
     window = MainUi()
     window.show()
     sys.exit(app.exec_())
-
